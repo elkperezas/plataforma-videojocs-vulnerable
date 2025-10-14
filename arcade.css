@@ -1,0 +1,131 @@
+/* Importar una fuente de estilo retro/pixelado de Google Fonts */
+/* La fuente 'Press Start 2P' es perfecta para este estilo */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    /* Paleta de colores arcade */
+    --color-fondo: #202045;       /* Azul marino profundo (como el espacio) */
+    --color-marco: #c92e2e;       /* Magenta brillante */
+    --color-texto: #ffffff;       /* Verde neón brillante */
+    --color-boton-fondo: #ffe100; /* Naranja/rojo de botón de máquina */
+    --color-boton-texto: #ff0000; /* Blanco */
+    --color-error: #ff0000;       /* Rojo puro */
+}
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    /* Fondo con patrón de píxeles sutil (opcional) */
+    background-image: radial-gradient(#ffffff35 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Contenedor principal del formulario */
+.arcade-container {
+    background-color: #000000; /* Fondo negro para el contraste */
+    border: 5px solid var(--color-marco);
+    box-shadow: 0 0 20px var(--color-marco), /* Resplandor neón */
+                inset 0 0 10px var(--color-marco); /* Borde interior brillante */
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    transform: skew(-2deg); /* Efecto de inclinación de máquina arcade */
+}
+
+h1 {
+    font-size: 1.5em;
+    text-transform: uppercase;
+    color: var(--color-marco);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px var(--color-fondo); /* Sombra de texto */
+}
+
+/* Estilo para etiquetas y campos de entrada */
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left;
+    font-size: 0.8em;
+}
+
+input[type="text"], 
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid var(--color-marco);
+    background-color: #333333;
+    color: var(--color-texto);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8em;
+    box-sizing: border-box;
+    /* Efecto de borde pixelado */
+    image-rendering: pixelated; 
+}
+
+/* Botones estilo joystick */
+button[type="submit"] {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--color-boton-fondo);
+    color: var(--color-boton-texto);
+    border: 3px solid #ffffff;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    box-shadow: 4px 4px #000; /* Sombra de botón presionable */
+    transition: all 0.1s;
+}
+
+button[type="submit"]:hover {
+    background-color: #ffa500;
+}
+
+button[type="submit"]:active {
+    box-shadow: 1px 1px #000; /* Efecto de botón presionado */
+    transform: translate(3px, 3px);
+}
+
+/* Enlaces estilo arcade */
+a {
+    color: var(--color-texto);
+    text-decoration: none;
+    text-shadow: 1px 1px #000;
+}
+
+a:hover {
+    color: var(--color-marco);
+}
+
+/* Mensajes de error */
+.error, .mensaje-exito {
+    font-size: 0.7em;
+    padding: 10px;
+    margin: 15px 0;
+    border: 3px solid;
+}
+
+.error {
+    color: var(--color-error);
+    border-color: var(--color-error);
+}
+
+.mensaje-exito {
+    color: var(--color-texto);
+    border-color: var(--color-texto);
+}
+
+/* Para la navegación (opcional) */
+p {
+    margin-top: 20px;
+    font-size: 0.8em;
+}
