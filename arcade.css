@@ -97,7 +97,7 @@ button[type="submit"]:active {
 
 /* Enlaces estilo arcade */
 a {
-    color: var(--color-texto);
+    color: red;
     text-decoration: none;
     text-shadow: 1px 1px #000;
 }

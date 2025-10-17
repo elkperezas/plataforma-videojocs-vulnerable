@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #202020;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+#menu {
+  margin-bottom: 15px;
+}
+
+#tablero {
+  display: inline-block;
+  margin-top: 10px;
+  background-color: #333;
+  border: 2px solid #555;
+}
+
+.celda {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #444;
+  display: inline-block;
+  vertical-align: top;
+  background-color: #555;
+  font-weight: bold;
+  color: white;
+  user-select: none;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.revelada {
+  background-color: #777;
+  cursor: default;
+}
+
+.mina {
+  background-color: red;
+}
+
+.bandera {
+  background-color: orange;
+}

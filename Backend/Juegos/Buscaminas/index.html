@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buscaminas</title>
+  <link rel="stylesheet" href="./index.css" />
+</head>
+<body>
+  <h1>Buscaminas</h1>
+
+  <div id="menu">
+    <label for="nivel">Dificultad:</label>
+    <select id="nivel">
+      <option value="facil">Fácil (7x7, 8 minas)</option>
+      <option value="medio">Medio (10x10, 15 minas)</option>
+      <option value="dificil">Difícil (14x14, 30 minas)</option>
+    </select>
+    <button id="btnIniciar">Iniciar</button>
+  </div>
+
+  <div id="tablero"></div>
+
+  <script src="./classes.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>

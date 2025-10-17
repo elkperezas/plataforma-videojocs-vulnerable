@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             $_SESSION['usuario_id'] = $usuario_db['id'];
             $_SESSION['usuario_nombre'] = $usuario; 
             
-            header('Location: seleccion_juegos.php');
+            header('Location: ./Backend/plataforma.php');
             exit;
         } else {
             $error = "Nombre de usuario o contraseña incorrectos.";
