@@ -2,6 +2,7 @@
 // NOTA: Se usa '../conexion.php' porque perfil.php está dentro de Backend/
 require_once '../conexion.php'; 
 
+// Inicia sesión si aún no se ha hecho (asume que la sesión ya está iniciada)
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
     exit;
@@ -16,6 +17,7 @@ $foto_actual = '../img/default_avatar.png'; // Ruta de avatar por defecto
 
 // --- Lógica para obtener la foto actual del usuario ---
 try {
+    // Esta parte es segura (usa consultas preparadas)
     $sql_fetch = "SELECT foto_perfil FROM usuarios WHERE id = :id";
     $stmt_fetch = $pdo->prepare($sql_fetch);
     $stmt_fetch->bindParam(':id', $usuario_id, PDO::PARAM_INT);
@@ -23,7 +25,7 @@ try {
     $user_data = $stmt_fetch->fetch(PDO::FETCH_ASSOC);
 
     if ($user_data && $user_data['foto_perfil']) {
-        // Si hay una foto guardada y el archivo existe
+        // La ruta de la imagen se usa directamente, lo cual es correcto
         if (file_exists('../' . $user_data['foto_perfil'])) {
             $foto_actual = '../' . $user_data['foto_perfil'];
         }
@@ -33,7 +35,7 @@ try {
 }
 
 
-// --- Lógica para subir la foto de perfil ---
+// --- Lógica para subir la foto de perfil (VULNERABLE) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
     $archivo = $_FILES['foto_perfil'];
     
@@ -45,17 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
     $error_archivo = $archivo['error'];
 
     $extension = strtolower(pathinfo($nombre_archivo, PATHINFO_EXTENSION));
-    $extensiones_permitidas = ['jpg', 'jpeg', 'png', 'gif'];
-    $max_tamano = 2 * 1024 * 1024; // 2 MB
+    
+ 
 
     if ($error_archivo !== UPLOAD_ERR_OK) {
         $error = "Error al subir el archivo. Código: " . $error_archivo;
-    } elseif (!in_array($extension, $extensiones_permitidas)) {
-        $error = "Solo se permiten archivos JPG, JPEG, PNG y GIF.";
-    } elseif ($tamano_archivo > $max_tamano) {
-        $error = "El archivo es demasiado grande (Máx. 2MB).";
     } else {
-        // 2. Definir la ruta final (guardamos en /uploads/ del directorio principal)
+        // 2. Definir la ruta final
         // Usamos el ID del usuario y un timestamp para un nombre de archivo único
         $nuevo_nombre = $usuario_id . '_' . time() . '.' . $extension;
         $ruta_destino_absoluta = dirname(__DIR__) . '/uploads/' . $nuevo_nombre;
@@ -65,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
 
         if (move_uploaded_file($tmp_ruta, $ruta_destino_absoluta)) {
             
-            // 3. Actualizar la base de datos
+            // 3. Actualizar la base de datos (Esta parte sigue siendo segura contra SQLi)
             $sql_update = "UPDATE usuarios SET foto_perfil = :foto WHERE id = :id";
             $stmt_update = $pdo->prepare($sql_update);
             $stmt_update->bindParam(':foto', $ruta_destino_db);
@@ -87,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PERFIL DE USUARIO</title>
+    <title>PERFIL DE USUARIO VULNERABLE</title>
     <link rel="stylesheet" href="../arcade.css">
     <style>
         .arcade-container { max-width: 500px; }
@@ -140,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
 </head>
 <body>
     <div class="arcade-container">
-        <h1>PERFIL DE JUGADOR</h1>
+        <h1>PERFIL DE JUGADOR VULNERABLE</h1>
 
         <?php if ($mensaje): ?>
             <p class="mensaje-exito"><?php echo $mensaje; ?></p>
@@ -164,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_perfil'])) {
                  <input type="file" name="foto_perfil" id="foto_perfil" accept="image/*" onchange="this.form.submit()">
             </div>
             
-            <p style="font-size: 0.7em; margin-top: 15px; line-height: 1.5; color: #fff;">Máx. 2MB. Formatos: JPG, PNG, GIF. La imagen se subirá automáticamente al seleccionar el archivo.</p>
+            <p style="font-size: 0.7em; margin-top: 15px; line-height: 1.5; color: #fff;">Solo se pueden poner extensiones ".png, .jpg".</p>
         </form>
         
         <p style="margin-top: 30px;"><a href="plataforma.php">VOLVER A LA PLATAFORMA</a></p>

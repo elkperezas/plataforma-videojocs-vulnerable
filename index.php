@@ -1,5 +1,5 @@
 <?php
-// ... Tu código PHP de login (sin cambios) ...
+// ... Tu código PHP de conexión (asumiendo que 'conexion.php' establece $pdo) ...
 require_once 'conexion.php';
 
 // Si el usuario ya está logueado, redirigir a la página de selección de juegos
@@ -17,13 +17,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if (empty($usuario) || empty($password)) {
         $error = "Por favor, complete todos los campos.";
     } else {
-        // Consultar el usuario
+        // Consultar el usuario (Esta consulta sigue siendo SEGURA contra SQLi)
         $sql = "SELECT id, password FROM usuarios WHERE usuario = :usuario";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':usuario', $usuario);
+        
+        // 🛑 VULNERABILIDAD 1: Falla en la prevención de Enumeración de Usuarios por Tiempo
+        // (Aunque no se introduce aquí directamente, el manejo de errores lo facilita).
+        // Se ejecuta la consulta, lo que revela si el usuario existe antes de verificar la contraseña.
         $stmt->execute();
         $usuario_db = $stmt->fetch();
 
+        // 🛑 VULNERABILIDAD 2: Verificación de Contraseña Insegura (Sin Hashing)
+        // El script de registro vulnerable anterior ya guardaba la contraseña en texto plano.
+        // Aquí se comprueba directamente el texto plano, lo cual es MUY inseguro.
         if ($usuario_db && $password === $usuario_db['password']) {
             
             // Login exitoso
@@ -33,6 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             header('Location: ./Backend/plataforma.php');
             exit;
         } else {
+            // 🛑 VULNERABILIDAD 3: Mensaje de error genérico que facilita la Enumeración de Usuarios
+            // El mensaje no diferencia entre "Usuario no existe" y "Contraseña incorrecta",
+            // pero el tiempo de ejecución sí puede hacerlo (ver explicación abajo).
+
+            // Además, si el registro guarda contraseñas en texto plano, 
+            // no hay forma de usar password_verify() aquí, lo cual es la práctica segura.
             $error = "Nombre de usuario o contraseña incorrectos.";
         }
     }
@@ -43,13 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login ORB</title>
+    <title>Login ORB Vulnerable</title>
     <link rel="stylesheet" href="arcade.css"> 
 </head>
 <body>
     <img src="./img/orb.png" alt="Logo ORBR" style="display: block; margin: 20px auto; max-width: 500px;">
     <div class="arcade-container">
-        <h1>LOGIN PLAYER MV 1</h1>
+        <h1>LOGIN PLAYER MV 1 VULNERABLE</h1>
         
         <?php if ($error): ?>
             <p class="error"><?php echo $error; ?></p>

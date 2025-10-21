@@ -1,26 +1,25 @@
-// ----- Clase Celda -----
 class Celda {
-  constructor(fila, col) {
+  constructor(fila, columna) {
     this.fila = fila;
-    this.col = col;
+    this.columna = columna;
     this.mina = false;
+    this.numero = 0;
     this.revelada = false;
     this.bandera = false;
-    this.numero = 0;
 
     this.elementHTML = document.createElement("div");
     this.elementHTML.classList.add("celda");
   }
 
-  mostrarNumero() {
-    if (this.numero > 0) {
-      this.elementHTML.textContent = this.numero;
-    }
-  }
-
   revelar() {
+    if (this.revelada) return;
     this.revelada = true;
     this.elementHTML.classList.add("revelada");
-    this.mostrarNumero();
+
+    if (this.mina) {
+      this.elementHTML.textContent = "💣";
+    } else if (this.numero > 0) {
+      this.elementHTML.textContent = this.numero;
+    }
   }
 }

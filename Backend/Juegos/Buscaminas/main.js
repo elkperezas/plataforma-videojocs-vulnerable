@@ -1,10 +1,12 @@
 const tableroHTML = document.querySelector("#tablero");
 const btnIniciar = document.querySelector("#btnIniciar");
 const nivelSelect = document.querySelector("#nivel");
+const marcador = document.querySelector("#marcador");
 
 let filas, columnas, minas;
 let tablero = [];
-let juegoTerminado = false; // ✅ Paso 1: control del estado del juego
+let juegoTerminado = false;
+let puntuacion = 0;
 
 btnIniciar.addEventListener("click", iniciarJuego);
 
@@ -16,7 +18,9 @@ function iniciarJuego() {
 
   tablero = [];
   tableroHTML.innerHTML = "";
-  juegoTerminado = false; // Reinicia estado
+  juegoTerminado = false;
+  puntuacion = 0;
+  actualizarMarcador();
 
   crearTablero();
   colocarMinas();
@@ -35,29 +39,35 @@ function crearTablero() {
       tablero[f][c] = celda;
       tableroHTML.appendChild(celda.elementHTML);
 
-      // clic izquierdo
       celda.elementHTML.addEventListener("click", () => {
-        if (juegoTerminado) return; // ✅ Paso 2: bloquear clics si juego terminado
-        if (!celda.revelada && !celda.bandera) {
-          if (celda.mina) {
-            mostrarTodasLasMinas();
-            alert("¡Has perdido!");
-            juegoTerminado = true; // ✅ Paso 3: bloquear el juego al perder
-          } else {
-            revelarCelda(f, c);
-            comprobarVictoria();
-          }
+        if (juegoTerminado || celda.revelada || celda.bandera) return;
+
+        celda.revelar();
+
+        // Puntos solo suman si no es mina
+        if (!celda.mina) {
+          puntuacion += celda.numero === 0 ? 5 : 10;
+          actualizarMarcador();
+        } else {
+          mostrarTodasLasMinas();
+          alert("💣 ¡Has perdido!");
+          juegoTerminado = true;
         }
+
+        if (!juegoTerminado) comprobarVictoria();
       });
 
-      // clic derecho para bandera
       celda.elementHTML.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        if (juegoTerminado) return; // bloquear también clic derecho
-        if (!celda.revelada) {
-          celda.bandera = !celda.bandera;
-          celda.elementHTML.classList.toggle("bandera");
-        }
+        if (juegoTerminado || celda.revelada) return;
+
+        celda.bandera = !celda.bandera;
+        celda.elementHTML.classList.toggle("bandera");
+
+        // Puntos por bandera correcta
+        if (celda.bandera && celda.mina) puntuacion += 20;
+        if (!celda.bandera && celda.mina) puntuacion -= 0; // nunca negativo
+        actualizarMarcador();
       });
     }
   }
@@ -98,7 +108,11 @@ function revelarCelda(f, c) {
   if (celda.revelada) return;
   celda.revelar();
 
-  // expansión si es 0
+  if (!celda.mina) {
+    puntuacion += celda.numero === 0 ? 5 : 10;
+    actualizarMarcador();
+  }
+
   if (celda.numero === 0 && !celda.mina) {
     for (let df = -1; df <= 1; df++) {
       for (let dc = -1; dc <= 1; dc++) {
@@ -117,7 +131,7 @@ function mostrarTodasLasMinas() {
       const celda = tablero[f][c];
       if (celda.mina) {
         celda.elementHTML.classList.add("mina");
-        celda.elementHTML.textContent = "🏴";
+        celda.elementHTML.textContent = "💣";
       }
     }
   }
@@ -131,8 +145,13 @@ function comprobarVictoria() {
     }
   }
   if (celdasReveladas === filas * columnas - minas && !juegoTerminado) {
-    alert("¡Has ganado!");
-    juegoTerminado = true; // ✅ Paso 3: bloquear juego al ganar
+    puntuacion += 200; // bonus por ganar
+    actualizarMarcador();
+    alert("🎉 ¡Has ganado!");
+    juegoTerminado = true;
   }
 }
 
+function actualizarMarcador() {
+  marcador.textContent = `Puntuación: ${puntuacion}`;
+}

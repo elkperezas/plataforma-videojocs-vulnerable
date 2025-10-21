@@ -3,8 +3,6 @@
 session_start();
 
 // Configuración de la base de datos
-// 🛑 VULNERABILIDAD 1: Exposición de credenciales. 
-// En un entorno de producción, las credenciales no deberían estar aquí.
 define('DB_HOST', 'localhost'); // Tu host (generalmente 'localhost')
 define('DB_USER', 'fernando'); // Tu usuario de la base de datos
 define('DB_PASS', 'la33seacerca'); // Tu contraseña de la base de datos
@@ -16,10 +14,9 @@ try {
     
     // Opciones de conexión
     $opciones = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        // Se mantiene desactivada la emulación, pero la función vulnerable la ignora.
-        PDO::ATTR_EMULATE_PREPARES  => false,
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Activar excepciones para errores
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,        // Modo de obtención predeterminado: array asociativo
+        PDO::ATTR_EMULATE_PREPARES   => false,                   // Desactivar la emulación de preparaciones para mayor seguridad
     ];
     
     // Crear la instancia de PDO
@@ -30,5 +27,5 @@ try {
     die("Error de conexión a la base de datos: " . $e->getMessage());
 }
 
-
+// Nota: Para este ejemplo, se asume que tienes una tabla 'usuarios' con campos: 'id', 'usuario', 'password'.
 ?>
