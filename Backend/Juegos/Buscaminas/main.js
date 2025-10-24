@@ -3,10 +3,19 @@ const btnIniciar = document.querySelector("#btnIniciar");
 const nivelSelect = document.querySelector("#nivel");
 const marcador = document.querySelector("#marcador");
 
+const datos = {
+  usuari_id, // ❌ No necesario si usas sesión, y mal obtenido
+  joc_id, // ID del juego
+  nivell_jugat: nivelSelect.value, // No se usa en el PHP
+  puntuacio_obtinguda: puntuacionFinal // Nombre incorrecto
+};
+
+
 let filas, columnas, minas;
 let tablero = [];
 let juegoTerminado = false;
 let puntuacion = 0;
+const joc_id = 1; // ID del juego "Buscaminas" en tu tabla jocs
 
 btnIniciar.addEventListener("click", iniciarJuego);
 
@@ -39,12 +48,12 @@ function crearTablero() {
       tablero[f][c] = celda;
       tableroHTML.appendChild(celda.elementHTML);
 
+      // 🖱️ Click izquierdo
       celda.elementHTML.addEventListener("click", () => {
         if (juegoTerminado || celda.revelada || celda.bandera) return;
 
         celda.revelar();
 
-        // Puntos solo suman si no es mina
         if (!celda.mina) {
           puntuacion += celda.numero === 0 ? 5 : 10;
           actualizarMarcador();
@@ -52,11 +61,13 @@ function crearTablero() {
           mostrarTodasLasMinas();
           alert("💣 ¡Has perdido!");
           juegoTerminado = true;
+          partidaTerminada(puntuacion); // 💾 Guardar puntuación
         }
 
         if (!juegoTerminado) comprobarVictoria();
       });
 
+      // 🚩 Click derecho (bandera)
       celda.elementHTML.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         if (juegoTerminado || celda.revelada) return;
@@ -64,9 +75,7 @@ function crearTablero() {
         celda.bandera = !celda.bandera;
         celda.elementHTML.classList.toggle("bandera");
 
-        // Puntos por bandera correcta
         if (celda.bandera && celda.mina) puntuacion += 20;
-        if (!celda.bandera && celda.mina) puntuacion -= 0; // nunca negativo
         actualizarMarcador();
       });
     }
@@ -145,13 +154,57 @@ function comprobarVictoria() {
     }
   }
   if (celdasReveladas === filas * columnas - minas && !juegoTerminado) {
-    puntuacion += 200; // bonus por ganar
+    puntuacion += 200;
     actualizarMarcador();
     alert("🎉 ¡Has ganado!");
     juegoTerminado = true;
+    partidaTerminada(puntuacion); // 💾 Guardar puntuación
   }
 }
 
 function actualizarMarcador() {
   marcador.textContent = `Puntuación: ${puntuacion}`;
+}
+/* 💾 Función para enviar la puntuación al backend */
+function partidaTerminada(puntuacionFinal) {
+    // El ID del usuario (usuari_id) se obtiene en el backend desde la sesión de PHP, 
+    // no debemos enviarlo desde el cliente por seguridad y simplicidad.
+    
+    // Si necesitas diferenciar los juegos en el ranking, usa 'joc_id'
+    const joc = (joc_id === 1) ? 'buscaminas' : 'desconocido';
+
+    const datos = {
+        // Renombramos la clave para coincidir con lo que espera PHP
+        puntuacion: puntuacionFinal, 
+        // Renombramos la clave para coincidir con lo que espera PHP (juego o joc)
+        juego: joc 
+    };
+
+    fetch("../../Backend/guardar_puntuacion.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+    })
+    .then(res => {
+        // Verificar si la respuesta fue un error (4xx o 5xx) antes de intentar parsear JSON
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (data.success === true) { // Usamos 'success' que es la clave del PHP
+            console.log("✅ Puntuación guardada correctamente:", data.score);
+            alert("Puntuación guardada: " + data.score);
+        } else {
+            // Manejar error devuelto por el script PHP (ej: error DB)
+            console.error("❌ Error al guardar puntuación:", data.message);
+            alert("Error al guardar puntuación: " + data.message);
+        }
+    })
+    .catch(err => {
+        // Manejar errores de red o errores HTTP
+        console.error("❌ Error de conexión/servidor:", err);
+        alert("Error de conexión con el servidor. Verifica el script PHP.");
+    });
 }
