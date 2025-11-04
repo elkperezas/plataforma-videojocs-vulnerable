@@ -12,19 +12,24 @@
   <div id="menu">
     <label for="nivel">Dificultad:</label>
     <select id="nivel">
-      <option value="facil">Fácil (7x7, 8 minas)</option>
-      <option value="medio">Medio (10x10, 15 minas)</option>
-      <option value="dificil">Difícil (14x14, 30 minas)</option>
+      <option value="1">Muy fácil (5x5, 5 minas)</option>
+      <option value="2">Fácil (7x7, 10 minas)</option>
+      <option value="3">Medio (10x10, 20 minas)</option>
+      <option value="4">Difícil (12x12, 30 minas)</option>
+      <option value="5">Experto (15x15, 45 minas)</option>
     </select>
     <button id="btnIniciar">Iniciar</button>
   </div>
 
-  <p id="marcador">Puntuación: 0</p>
-
+  <h3 id="marcador">Puntuación: 0</h3>
   <div id="tablero"></div>
 
+  <!-- Cargar primero la clase Celda -->
   <script src="./classes.js" defer></script>
+  <!-- Luego la lógica del juego -->
   <script src="./main.js" defer></script>
 </body>
 </html>
+
+
 

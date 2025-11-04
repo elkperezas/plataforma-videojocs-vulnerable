@@ -1,51 +1,38 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #202020;
+  background-color: #111;
   color: white;
+  font-family: monospace;
   text-align: center;
-  padding: 20px;
-}
-
-#menu {
-  margin-bottom: 10px;
 }
 
 #tablero {
-  display: inline-block;
-  background-color: #333;
-  border: 2px solid #555;
+  display: grid;
+  gap: 2px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .celda {
   width: 30px;
   height: 30px;
-  border: 1px solid #444;
-  display: inline-block;
-  vertical-align: top;
-  background-color: #555;
-  font-weight: bold;
-  color: white;
-  line-height: 30px;
+  background-color: #333;
+  border: 1px solid #555;
   cursor: pointer;
-  user-select: none;
-}
-
-.revelada {
-  background-color: #777;
-  cursor: default;
-}
-
-.mina {
-  background-color: red;
-}
-
-.bandera {
-  background-color: orange;
-}
-
-#marcador {
-  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
   font-weight: bold;
-  margin: 10px;
-  color: #fff;
+}
+
+.celda.revelada {
+  background-color: #666;
+}
+
+.celda.bandera {
+  background-color: #e0b400;
+}
+
+.celda.mina {
+  background-color: red;
 }

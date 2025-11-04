@@ -20,6 +20,10 @@ class Celda {
       this.elementHTML.textContent = "💣";
     } else if (this.numero > 0) {
       this.elementHTML.textContent = this.numero;
+      this.elementHTML.classList.add("numero");
+    } else {
+      this.elementHTML.textContent = "";
+      this.elementHTML.classList.add("vacia"); // 🔹 Fondo claro para vacías
     }
   }
 }

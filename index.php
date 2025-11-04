@@ -22,15 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':usuario', $usuario);
         
-        // 🛑 VULNERABILIDAD 1: Falla en la prevención de Enumeración de Usuarios por Tiempo
-        // (Aunque no se introduce aquí directamente, el manejo de errores lo facilita).
-        // Se ejecuta la consulta, lo que revela si el usuario existe antes de verificar la contraseña.
         $stmt->execute();
         $usuario_db = $stmt->fetch();
 
-        // 🛑 VULNERABILIDAD 2: Verificación de Contraseña Insegura (Sin Hashing)
-        // El script de registro vulnerable anterior ya guardaba la contraseña en texto plano.
-        // Aquí se comprueba directamente el texto plano, lo cual es MUY inseguro.
         if ($usuario_db && $password === $usuario_db['password']) {
             
             // Login exitoso
@@ -40,12 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             header('Location: ./Backend/plataforma.php');
             exit;
         } else {
-            // 🛑 VULNERABILIDAD 3: Mensaje de error genérico que facilita la Enumeración de Usuarios
-            // El mensaje no diferencia entre "Usuario no existe" y "Contraseña incorrecta",
-            // pero el tiempo de ejecución sí puede hacerlo (ver explicación abajo).
-
-            // Además, si el registro guarda contraseñas en texto plano, 
-            // no hay forma de usar password_verify() aquí, lo cual es la práctica segura.
             $error = "Nombre de usuario o contraseña incorrectos.";
         }
     }

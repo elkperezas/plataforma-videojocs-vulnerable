@@ -1,5 +1,5 @@
 <?php
-require_once '../conexion.php'; // NO llamar session_start aquí si ya está en conexion.php
+require_once '../conexion.php'; // Se asume que aquí ya se inicia sesión y define $pdo
 
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
@@ -7,13 +7,16 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 try {
+    // 🔹 Mostrar los usuarios ordenados por puntos totales (sumando todas sus partidas)
     $stmt = $pdo->query("
-    SELECT u.usuario, MAX(p.puntuacio) as puntuacion
-    FROM partides p
-    JOIN usuarios u ON u.id = p.usuario_id
-    GROUP BY u.id
-    ORDER BY puntuacion DESC
-    LIMIT 10
+        SELECT 
+            u.usuario,
+            COALESCE(SUM(p.puntuacio), 0) AS puntuacion
+        FROM usuarios u
+        LEFT JOIN partides p ON u.id = p.usuario_id
+        GROUP BY u.id, u.usuario
+        ORDER BY puntuacion DESC
+        LIMIT 10
     ");
 
     $ranking = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -57,7 +60,7 @@ try {
                 <tr>
                     <th>POS.</th>
                     <th>JUGADOR</th>
-                    <th>MEJOR PUNTUACIÓN</th>
+                    <th>PUNTOS TOTALES</th>
                 </tr>
             </thead>
             <tbody>

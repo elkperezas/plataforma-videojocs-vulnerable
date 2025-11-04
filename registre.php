@@ -8,8 +8,7 @@ $error = '';
 $usuario = ''; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registro'])) {
-    // 🛑 VULNERABILIDAD 1: Falta de sanitización de la entrada para XSS
-    // Se toma directamente la entrada del usuario para mostrarla luego.
+    
     $usuario = $_POST['usuario']; 
     $password = $_POST['password']; 
     $password_confirm = $_POST['password_confirm'];
@@ -20,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registro'])) {
         $error = "Las contraseñas no coinciden.";
     } else {
         try {
-            // 1. Verificar si el usuario ya existe (Esta parte SÍ es segura contra SQLI)
+            
             $sql = "SELECT id FROM usuarios WHERE usuario = :usuario";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':usuario', $usuario);
@@ -30,12 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registro'])) {
                 $error = "El nombre de usuario ya está en uso.";
             } else {
                 
-                // 🛑 VULNERABILIDAD 2: Almacenamiento de contraseñas en texto plano.
-                // NO se está usando password_hash() para cifrar la contraseña.
-                $password_a_guardar = $password; // La contraseña se guarda tal cual. 😱
+               
+                $password_a_guardar = $password;
 
-                // 2. Insertar el nuevo usuario
-                // Esta consulta es segura contra SQLi por usar prepare/execute, pero los datos insertados son inseguros.
                 $sql_insert = "INSERT INTO usuarios (usuario, password) VALUES (:usuario, :password)";
                 $stmt_insert = $pdo->prepare($sql_insert);
                 $stmt_insert->bindParam(':usuario', $usuario);
